@@ -23,6 +23,10 @@ code_review_prompt:
     - 在以下 region 之间的内容视为自动生成：  
       `#region 自动生成代码，勿修改` ... `#endregion`
     - 对该区域：不检查命名规范/格式化/可读性等；仅在其可能导致编译错误、运行崩溃或严重安全风险时指出。
+    
+    ## 额外项
+    1. 当出现xxx.Instance时候可以不用判空处理
+    2. 不能使用GameObject.Find
 
     ## 输出(必须Markdown)
     必须包含三段标题（原样）：
