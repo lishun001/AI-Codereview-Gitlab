@@ -107,7 +107,7 @@ start_with_python() {
     
     # 安装依赖
     print_info "检查并安装依赖..."
-    pip install -r requirements.txt -q
+    pip3 install -r requirements.txt -q
     
     # 创建必要的目录
     mkdir -p data log
