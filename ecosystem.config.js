@@ -51,7 +51,7 @@ module.exports = {
     },
     {
       name: 'codereview-ui',
-      script: 'streamlit',
+      script: '.venv/bin/streamlit',
       args: 'run ui.py --server.port=5002 --server.address=0.0.0.0 --server.headless=true',
       interpreter: 'none',
       cwd: './',
