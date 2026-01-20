@@ -51,9 +51,9 @@ module.exports = {
     },
     {
       name: 'codereview-ui',
-      script: 'ui.py',
-      interpreter: 'python3',
-      args: '',
+      script: 'streamlit',
+      args: 'run ui.py --server.port=5002 --server.address=0.0.0.0 --server.headless=true',
+      interpreter: 'none',
       cwd: './',
       
       // 实例配置
