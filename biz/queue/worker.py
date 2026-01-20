@@ -279,6 +279,37 @@ def handle_github_pull_request_event(webhook_data: dict, github_token: str, gith
 
         # 将review结果提交到GitHub的 notes
         handler.add_pull_request_notes(f'Auto Review Result: \n{review_result}')
+        
+        # 发送简单的企业微信通知
+        pr_url = webhook_data['pull_request']['html_url']
+        comment_url = f"{pr_url}#issuecomment-latest"  # GitHub评论链接
+        
+        # 构建简单的通知消息
+        simple_message = f"""### 🔍 代码审查完成
+        
+**项目**: {webhook_data['repository']['name']}
+**作者**: {webhook_data['pull_request']['user']['login']}
+**分支**: {webhook_data['pull_request']['head']['ref']} → {webhook_data['pull_request']['base']['ref']}
+**提交数**: {len(commits)}
+
+**提交信息**:
+{chr(10).join(f"- {commit['title']}" for commit in commits[:5])}
+{f"... 还有 {len(commits) - 5} 个提交" if len(commits) > 5 else ""}
+
+**代码变更**: +{additions} -{deletions}
+
+[查看 Pull Request]({pr_url})
+[查看 AI 审查评论]({comment_url})
+"""
+        
+        # 发送企业微信通知
+        notifier.send_notification(
+            content=simple_message,
+            msg_type='markdown',
+            title='代码审查通知',
+            project_name=webhook_data['repository']['name'],
+            url_slug=github_url_slug
+        )
 
         # dispatch pull_request_reviewed event
         event_manager['merge_request_reviewed'].send(
