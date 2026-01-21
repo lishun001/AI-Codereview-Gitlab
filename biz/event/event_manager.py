@@ -26,13 +26,13 @@ def on_merge_request_reviewed(mr_review_entity: MergeRequestReviewEntity):
 
     if brief_mode:
         # 简短通知：仅包含提交信息和评论链接
-        s_msg = "\n".join(commit["message"].strip() for commit in mr_review_entity.commits)
+        s_msg = "\n\t\t".join(commit["message"].strip() for commit in mr_review_entity.commits)
         im_msg = f"""
 {lab_project}<font color=#00BB99>{mr_review_entity.project_name}</font>
 {lab_author}<font color=#FF9C00>{mr_review_entity.author}</font>
 {lab_source_branch}{mr_review_entity.source_branch}
 {lab_target_branch}{mr_review_entity.target_branch}
-{lab_commit}{s_msg}
+{lab_commit}\n{s_msg}
 {lab_review}**[查看合并详情及AI评论]({mr_review_entity.url})**
         """
     else:
