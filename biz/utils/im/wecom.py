@@ -58,10 +58,10 @@ class WeComNotifier:
         content = re.sub(r'#{5,}\s', '#### ', content)
 
         # 处理链接格式
-        content = re.sub(r'\[(.*?)\]\((.*?)\)', r'[链接]\2', content)
+        #content = re.sub(r'\[(.*?)\]\((.*?)\)', r'[链接]\2', content)
 
-        # 移除HTML标签
-        content = re.sub(r'<[^>]+>', '', content)
+        # 移除HTML标签，但保留 <font> 标签（企业微信支持颜色）
+        content = re.sub(r'<(?!/?font\b)[^>]+>', '', content)
 
         formatted_content += content
         return formatted_content

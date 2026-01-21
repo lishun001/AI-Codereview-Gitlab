@@ -29,7 +29,7 @@ def on_merge_request_reviewed(mr_review_entity: MergeRequestReviewEntity):
         s_msg = "\n".join(commit["message"].strip() for commit in mr_review_entity.commits)
         im_msg = f"""
 {lab_project}"<font color=#00BB99>{mr_review_entity.project_name}</font>"
-{lab_author}{mr_review_entity.author}"<font color=#FF9C00>{mr_review_entity.project_name}</font>"
+{lab_author}"<font color=#FF9C00>{mr_review_entity.author}</font>"
 {lab_source_branch}{mr_review_entity.source_branch}
 {lab_target_branch}{mr_review_entity.target_branch}
 {lab_commit}{s_msg}
