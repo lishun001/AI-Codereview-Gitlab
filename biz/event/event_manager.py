@@ -16,19 +16,24 @@ event_manager = {
 def on_merge_request_reviewed(mr_review_entity: MergeRequestReviewEntity):
     # 检查是否启用简短通知模式
     brief_mode = os.getenv('BRIEF_NOTIFICATION_ENABLED', '0') == '1'
-    
+
+    lab_project = "<font color=#999999>项目: </font>"
+    lab_author = "<font color=#999999>提交者: </font>"
+    lab_source_branch = "<font color=#999999>源分支: </font>"
+    lab_target_branch = "<font color=#999999>目标分支: </font>"
+    lab_commit = "<font color=#999999>提交信息: </font>"
+    lab_review = "<font color=#999999>PR链接: </font>"
+
     if brief_mode:
         # 简短通知：仅包含提交信息和评论链接
+        s_msg = "\n".join(commit["message"].strip() for commit in mr_review_entity.commits)
         im_msg = f"""
-### 🔀 {mr_review_entity.project_name}: Merge Request
-
-#### 合并请求信息:
-- **提交者:** {mr_review_entity.author}
-- **源分支**: {mr_review_entity.source_branch}
-- **目标分支**: {mr_review_entity.target_branch}
-- **提交信息:** {mr_review_entity.commit_messages}
-
-- [查看合并详情及AI评论]({mr_review_entity.url})
+{lab_project}"<font color=#00BB99>{mr_review_entity.project_name}</font>"
+{lab_author}{mr_review_entity.author}"<font color=#FF9C00>{mr_review_entity.project_name}</font>"
+{lab_source_branch}{mr_review_entity.source_branch}
+{lab_target_branch}{mr_review_entity.target_branch}
+{lab_commit}{s_msg}
+{lab_review}**[查看合并详情及AI评论]({mr_review_entity.url})**
         """
     else:
         # 完整通知：包含所有AI评论内容
@@ -43,14 +48,15 @@ def on_merge_request_reviewed(mr_review_entity: MergeRequestReviewEntity):
 - **更新时间**: {mr_review_entity.updated_at}
 - **提交信息:** {mr_review_entity.commit_messages}
 
-- [查看合并详情]({mr_review_entity.url})
+- **[查看合并详情]({mr_review_entity.url})**
 
 - **AI Review 结果:** 
 
 {mr_review_entity.review_result}
         """
-    
-    notifier.send_notification(content=im_msg, msg_type='markdown', title='Merge Request Review',
+
+    msg_title = "<font color=#88ff00>Merge Request Review</font>"
+    notifier.send_notification(content=im_msg, msg_type='markdown', title=msg_title,
                                project_name=mr_review_entity.project_name, url_slug=mr_review_entity.url_slug,
                                webhook_data=mr_review_entity.webhook_data)
 
