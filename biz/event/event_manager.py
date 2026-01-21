@@ -32,7 +32,7 @@ def on_merge_request_reviewed(mr_review_entity: MergeRequestReviewEntity):
 {lab_author}<font color=#FF9C00>{mr_review_entity.author}</font>
 {lab_source_branch}{mr_review_entity.source_branch}
 {lab_target_branch}{mr_review_entity.target_branch}
-{lab_commit}\n{s_msg}
+{lab_commit}\n\t\t{s_msg}
 {lab_review}**[查看合并详情及AI评论]({mr_review_entity.url})**
         """
     else:
