@@ -55,7 +55,7 @@ def on_merge_request_reviewed(mr_review_entity: MergeRequestReviewEntity):
 {mr_review_entity.review_result}
         """
 
-    msg_title = "<font color=#88ff00>Merge Request Review</font>"
+    msg_title = "<font color=#88ff00>Pull Request Review</font>"
     notifier.send_notification(content=im_msg, msg_type='markdown', title=msg_title,
                                project_name=mr_review_entity.project_name, url_slug=mr_review_entity.url_slug,
                                webhook_data=mr_review_entity.webhook_data)
