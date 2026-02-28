@@ -13,6 +13,10 @@ def filter_changes(changes: list):
     过滤数据，只保留支持的文件类型以及必要的字段信息
     专门处理GitHub格式的变更
     '''
+    # 打印changes参数中的所有文件名
+    filenames_in_changes = [item.get('new_path', '') for item in changes]
+    logger.info(f"Filenames in changes parameter: {filenames_in_changes}")
+    
     # 从环境变量中获取支持的文件扩展名
     supported_extensions = os.getenv('SUPPORTED_EXTENSIONS', '.java,.py,.php').split(',')
     
