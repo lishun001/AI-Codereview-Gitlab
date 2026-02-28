@@ -14,8 +14,8 @@ def filter_changes(changes: list):
     专门处理GitHub格式的变更
     '''
     # 打印changes参数中的所有文件名
-    filenames_in_changes = [item.get('new_path', '') for item in changes]
-    logger.info(f"Filenames in changes parameter: {filenames_in_changes}")
+    # filenames_in_changes = [item.get('new_path', '') for item in changes]
+    # logger.info(f"Filenames in changes parameter: {filenames_in_changes}")
     
     # 从环境变量中获取支持的文件扩展名
     supported_extensions = os.getenv('SUPPORTED_EXTENSIONS', '.java,.py,.php').split(',')
@@ -42,8 +42,8 @@ def filter_changes(changes: list):
         not_deleted_changes.append(change)
     
     # 打印not_deleted_changes中的文件扩展名
-    extensions_in_changes = [os.path.splitext(item.get('new_path', ''))[1] for item in not_deleted_changes]
-    logger.info(f"File extensions in not_deleted_changes: {extensions_in_changes}")
+    # extensions_in_changes = [os.path.splitext(item.get('new_path', ''))[1] for item in not_deleted_changes]
+    # logger.info(f"File extensions in not_deleted_changes: {extensions_in_changes}")
     
     logger.info(f"SUPPORTED_EXTENSIONS: {supported_extensions}")
     logger.info(f"After filtering deleted files: {not_deleted_changes}")
@@ -104,6 +104,11 @@ class PullRequestHandler:
             response = requests.get(url, headers=headers)
             logger.debug(
                 f"Get changes response from GitHub (attempt {attempt + 1}): {response.status_code}, {response.text}, URL: {url}")
+            
+            # 打印response的详细信息
+            logger.info(f"Response status code: {response.status_code}")
+            logger.info(f"Response headers: {response.headers}")
+            logger.info(f"Response text: {response.text}")
 
             # 检查请求是否成功
             if response.status_code == 200:
