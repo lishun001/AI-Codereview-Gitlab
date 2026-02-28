@@ -37,6 +37,10 @@ def filter_changes(changes: list):
                     
         not_deleted_changes.append(change)
     
+    # 打印not_deleted_changes中的文件扩展名
+    extensions_in_changes = [os.path.splitext(item.get('new_path', ''))[1] for item in not_deleted_changes]
+    logger.info(f"File extensions in not_deleted_changes: {extensions_in_changes}")
+    
     logger.info(f"SUPPORTED_EXTENSIONS: {supported_extensions}")
     logger.info(f"After filtering deleted files: {not_deleted_changes}")
     
