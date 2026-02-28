@@ -243,14 +243,14 @@ def handle_github_pull_request_event(webhook_data: dict, github_token: str, gith
 
         # 检查GitHub Pull Request的last_commit_id是否已经存在，如果存在则跳过处理
         github_last_commit_id = webhook_data['pull_request']['head']['sha']
-        if github_last_commit_id:
-            project_name = webhook_data['repository']['name']
-            source_branch = webhook_data['pull_request']['head']['ref']
-            target_branch = webhook_data['pull_request']['base']['ref']
+        # if github_last_commit_id:
+        #     project_name = webhook_data['repository']['name']
+        #     source_branch = webhook_data['pull_request']['head']['ref']
+        #     target_branch = webhook_data['pull_request']['base']['ref']
             
-            if ReviewService.check_mr_last_commit_id_exists(project_name, source_branch, target_branch, github_last_commit_id):
-                logger.info(f"Pull Request with last_commit_id {github_last_commit_id} already exists, skipping review for {project_name}.")
-                return
+            # if ReviewService.check_mr_last_commit_id_exists(project_name, source_branch, target_branch, github_last_commit_id):
+            #     logger.info(f"Pull Request with last_commit_id {github_last_commit_id} already exists, skipping review for {project_name}.")
+            #     return
 
         # 仅仅在PR创建或更新时进行Code Review
         # 获取Pull Request的changes
