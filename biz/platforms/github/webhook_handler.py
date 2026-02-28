@@ -95,44 +95,64 @@ class PullRequestHandler:
         max_retries = 3  # 最大重试次数
         retry_delay = 10  # 重试间隔时间（秒）
         for attempt in range(max_retries):
-            # 调用 GitHub API 获取 Pull Request 的 files（变更）
-            url = f"https://api.github.com/repos/{self.repo_full_name}/pulls/{self.pull_request_number}/files"
-            headers = {
-                'Authorization': f'token {self.github_token}',
-                'Accept': 'application/vnd.github.v3+json'
-            }
-            response = requests.get(url, headers=headers)
-            logger.debug(
-                f"Get changes response from GitHub (attempt {attempt + 1}): {response.status_code}, {response.text}, URL: {url}")
+            # 调用 GitHub API 获取 Pull Request 的 files（变更），支持分页
+            all_files = []
+            page = 1
+            per_page = 100  # GitHub API 最大支持每页100条
             
-            # 打印response的详细信息
-            logger.info(f"Response status code: {response.status_code}")
-            logger.info(f"Response headers: {response.headers}")
-            logger.info(f"Response text: {response.text}")
+            while True:
+                url = f"https://api.github.com/repos/{self.repo_full_name}/pulls/{self.pull_request_number}/files?per_page={per_page}&page={page}"
+                headers = {
+                    'Authorization': f'token {self.github_token}',
+                    'Accept': 'application/vnd.github.v3+json'
+                }
+                response = requests.get(url, headers=headers)
+                logger.debug(
+                    f"Get changes response from GitHub (attempt {attempt + 1}, page {page}): {response.status_code}, {response.text}, URL: {url}")
+                
+                # 打印response的详细信息
+                logger.info(f"Response status code: {response.status_code}")
+                logger.info(f"Response headers: {response.headers}")
+                logger.info(f"Response text (first 500 chars): {response.text[:500]}")
 
-            # 检查请求是否成功
-            if response.status_code == 200:
-                files = response.json()
-                if files:
-                    # 转换成GitLab格式的changes
-                    changes = []
-                    for file in files:
-                        change = {
-                            'old_path': file.get('filename'),
-                            'new_path': file.get('filename'),
-                            'diff': file.get('patch', ''),
-                            'additions': file.get('additions', 0),
-                            'deletions': file.get('deletions', 0)
-                        }
-                        changes.append(change)
-                    return changes
+                # 检查请求是否成功
+                if response.status_code == 200:
+                    files = response.json()
+                    if files:
+                        all_files.extend(files)
+                        logger.info(f"Retrieved {len(files)} files from page {page}, total so far: {len(all_files)}")
+                        
+                        # 如果返回的文件数少于per_page，说明已经是最后一页
+                        if len(files) < per_page:
+                            break
+                        page += 1
+                    else:
+                        # 当前页没有数据
+                        break
                 else:
-                    logger.info(
-                        f"Changes is empty, retrying in {retry_delay} seconds... (attempt {attempt + 1}/{max_retries}), URL: {url}")
-                    time.sleep(retry_delay)
+                    logger.warn(f"Failed to get changes from GitHub (URL: {url}): {response.status_code}, {response.text}")
+                    return []
+            
+            # 检查是否获取到了文件
+            if all_files:
+                # 转换成GitLab格式的changes
+                changes = []
+                for file in all_files:
+                    change = {
+                        'old_path': file.get('filename'),
+                        'new_path': file.get('filename'),
+                        'diff': file.get('patch', ''),
+                        'additions': file.get('additions', 0),
+                        'deletions': file.get('deletions', 0),
+                        'status': file.get('status', '')
+                    }
+                    changes.append(change)
+                logger.info(f"Total files retrieved: {len(changes)}")
+                return changes
             else:
-                logger.warn(f"Failed to get changes from GitHub (URL: {url}): {response.status_code}, {response.text}")
-                return []
+                logger.info(
+                    f"Changes is empty, retrying in {retry_delay} seconds... (attempt {attempt + 1}/{max_retries})")
+                time.sleep(retry_delay)
 
         logger.warning(f"Max retries ({max_retries}) reached. Changes is still empty.")
         return []  # 达到最大重试次数后返回空列表
