@@ -51,6 +51,7 @@ def handle_github_webhook(event_type, data):
     """
     # 获取GitHub配置
     github_token = os.getenv('GITHUB_ACCESS_TOKEN') or request.headers.get('X-GitHub-Token')
+    logger.info(f'Received GitHub event: {github_token}')
     if not github_token:
         return jsonify({'message': 'Missing GitHub access token'}), 400
 
